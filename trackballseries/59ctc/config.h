@@ -27,7 +27,7 @@
 #define DEBOUNCE 5
 
 /* Trackball angle adjustment.
-旋转角度仅支持 -127 到 127。
+   회전 각도는 -127부터 127 사이에서만 지원됩니다.
 */
 #define ROTATIONAL_TRANSFORM_ANGLE -25
 

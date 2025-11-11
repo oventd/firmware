@@ -36,28 +36,28 @@
  #define CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_ENABLE
 #undef ROTATIONAL_TRANSFORM_ANGLE
 #define ROTATIONAL_TRANSFORM_ANGLE 90
-//交换x,y数据
+// x,y 데이터를 교환합니다.
 //#define POINTING_DEVICE_ROTATION_90
 //#define POINTING_DEVICE_ROTATION_90_RIGHT
 
 // Double trackball build.
 //#undef POINTING_DEVICE_RIGHT
 //#define POINTING_DEVICE_LEFT
-//反转Y轴数据
+// Y축 데이터를 반전합니다.
 #define POINTING_DEVICE_INVERT_Y
 #undef POINTING_DEVICE_INVERT_X
 //#endif // POINTING_DEVICE_ENABLE
 
 //#define CHARYBDIS_DRAGSCROLL_REVERSE_X
-//要反转垂直滚动方向（即模仿 macOS“自然”滚动方向），请定义CHARYBDIS_DRAGSCROLL_REVERSE_Y
+// 수직 스크롤 방향을 macOS 자연 스크롤처럼 반전하려면 아래 옵션을 정의하세요.
 #define CHARYBDIS_DRAGSCROLL_REVERSE_Y
 
 //#ifdef POINTING_DEVICE_ENABLE
 // Enable pointer acceleration, which increases the speed by ~2x for large
 // displacement, while maintaining 1x speed for slow movements.
 // - `CHARYBDIS_POINTER_ACCELERATION_FACTOR`
-//启用指针加速，这将使速度增加~2x
-//位移，同时保持1倍的速度缓慢移动。
+// 포인터 가속을 활성화하면 빠른 이동에서 속도가 약 2배 증가합니다.
+// 느린 움직임에서는 1배 속도를 유지합니다.
 //#   define CHARYBDIS_POINTER_ACCELERATION_ENABLE
 
 // Automatically enable the pointer layer when moving the trackball.  See also:

@@ -42,27 +42,27 @@
 #define SERIAL_USART_FULL_DUPLEX
 #define SERIAL_USART_TX_PIN GP1
 #define SERIAL_USART_RX_PIN GP0
-//TX主半部必须与RX从半部的引脚相连，RX主半部必须与TX从半部的引脚相连
-//这个配置可以在内部直接交换，不需要在物理pcb交换
+// TX 마스터 핀은 RX 슬레이브의 핀과 연결하고, RX 마스터 핀은 TX 슬레이브 핀과 연결되어야 합니다.
+// 이 설정은 내부적으로만 교체되어 실제 PCB를 바꿀 필요가 없습니다.
 #define SERIAL_USART_PIN_SWAP
 
 #define TAP_CODE_DELAY 10
 
 #ifdef OLED_ENABLE
-/* 使用 QMK 提供的分割传输时，确保当前层状态在从站上可用。 */
+/* QMK 분할 전송을 사용할 때 현재 레이어 상태가 슬레이브에 전달되도록 합니다. */
 #define SPLIT_LAYER_STATE_ENABLE
-/* 确保使用 QMK 提供的拆分传输时，当前主机指示器状态 (caps/num/scroll) 在从属设备上可用 */
+/* QMK 분할 전송을 사용할 때 캡스/넘/스크롤 상태 표시기가 슬레이브에도 반영되도록 합니다. */
 #define SPLIT_LED_STATE_ENABLE
-/* 使用 QMK 提供的分割传输时，确保当前修改器状态（正常、弱和单次）在从属设备上可用 */
+/* QMK 분할 전송을 사용할 때 현재 modifier 상태(정상, 약화, 단타)가 슬레이브에 전달됩니다. */
 #define SPLIT_MODS_ENABLE
-/* 同步两半之间 OLED 的开/关状态。 */
+/* 양쪽 OLED의 켜짐/꺼짐 상태를 동기화합니다. */
 #define SPLIT_OLED_ENABLE
-/* 使用 QMK 提供的分割传输时，确保当前 WPM 在从属设备上可用 */
+/* QMK 분할 전송을 사용할 때 현재 WPM이 슬레이브에서 보여지도록 합니다. */
 #define SPLIT_WPM_ENABLE
 #define OLED_FONT_H "keyboards/trackballseries/59ctc/keymaps/via/glcdfont.c"
 #define OLED_TIMEOUT 50000
 #endif
 
-//解决从机休眠后无法唤醒问题
+// 슬레이브가 절전 모드에서 깨어나지 않는 문제를 해결합니다.
 //#define FORCED_SYNC_THROTTLE_MS 100
 //#define CHARYBDIS_CONFIG_SYNC
