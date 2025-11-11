@@ -19,7 +19,7 @@ enum charybdis_keymap_layers {
 };
 
 /**
-在这里定义的层，切到该层这个层就变为自动阻击层
+여기서 정의된 레이어로 전환하면 자동 스나이핑 레이어가 됩니다
 */
 #define CHARYBDIS_AUTO_SNIPING_ON_LAYER LAYER_POINTER
 
@@ -45,11 +45,11 @@ typedef union {
     struct {
         uint16_t auto_time: 13;
         uint8_t threshold_value : 3; //
-        bool    is_auto_enabled : 1;  //新加的
-        bool    is_oled_enabled : 1;  //新加的
+        bool    is_auto_enabled : 1;  // 새로 추가됨
+        bool    is_oled_enabled : 1;  // 새로 추가됨
     };
 } auto_config_t;
-//2的数字范围是从0到3， 4是16位，5是0-31位，6是即0到63。
+// 2비트 숫자의 범위는 0~3이고, 4비트는 16, 5비트는 0~31, 6비트는 0~63입니다.
 static auto_config_t user_config;
 
 void keyboard_post_init_user(void){
@@ -68,13 +68,13 @@ void eeconfig_init_user(void){
 #define CHARYBDIS_AUTO_MAX_TIMEOUT_MS 3000
 #define CHARYBDIS_AUTO_MIN_TIMEOUT_MS 0
 
-//Charybdis轨迹球滚动停止后多长时间没操作返回原来层，默认1秒
+// Charybdis 트랙볼이 멈춘 후 일정 시간 입력이 없으면 원래 레이어로 돌아갑니다. 기본값 1초
 #ifndef CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_TIMEOUT_MS
 #define CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_TIMEOUT_MS user_config.auto_time
 #endif
 
 
-//Charybdis自动指针层触发阈值，值越低越灵敏 user_config.threshold_value 0-7
+// Charybdis 자동 포인터 레이어 트리거 임계값, 값이 낮을수록 민감. user_config.threshold_value 0-7
 #ifndef CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD
 #define CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD user_config.threshold_value
 #endif // CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD
@@ -227,24 +227,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // clang-format on
-//用来检测自动切换鼠标层的地方，如果鼠标的水平位移x或垂直位移y的绝对值大于设定的阈值
-//自动切换到LAYER_POINTER鼠标层，并将rgb改为绿色
-//如果没有开启这个不起作用
+// 자동 마우스 레이어 전환을 감지하는 구간입니다. 마우스의 수평 또는 수직 이동 절댓값이 설정된 임계값을 넘으면
+// 자동으로 LAYER_POINTER 마우스 레이어로 전환하고 RGB를 녹색으로 변경합니다
+// 이 기능을 켜지 않으면 작동하지 않습니다
 #ifdef POINTING_DEVICE_ENABLE
 
 #ifdef CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_ENABLE
-//发送传感器数据的回调，以便用户代码可以拦截和修改数据。返回鼠标报告。
+// 센서 데이터를 전달하는 콜백입니다. 사용자 코드가 가로채거나 수정할 수 있고, 마우스 리포트를 반환합니다.
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
     if(user_config.is_auto_enabled){
-//            如果鼠标的水平或垂直移动距离超过了阈值 CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD
+//            마우스의 수평 또는 수직 이동 거리가 CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD를 넘으면
             if (abs(mouse_report.x) > CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD || abs(mouse_report.y) > CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD) {
-                //如果自动切换鼠标层的定时器为0
+                //자동 마우스 레이어 타이머가 0일 때
                 if (auto_pointer_layer_timer == 0) {
 //                    layer_on(LAYER_POINTER);
-                    //打开 LAYER_MOUSE 鼠标层。
+                    // LAYER_MOUSE 마우스 레이어를 켭니다.
                     layer_on(LAYER_MOUSE);
                 }
-                //更新自动切换鼠标层的定时器
+                // 자동 마우스 레이어 타이머를 갱신합니다.
                 auto_pointer_layer_timer = timer_read();
             }
     }
@@ -254,12 +254,12 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
 void matrix_scan_user(void) {
     if(user_config.is_auto_enabled){
-         // 如果自动切换鼠标层的定时器不为0，并且当前时间与定时器启动时间的差值大于等于 CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_TIMEOUT_MSn
+         // 자동 마우스 레이어 타이머가 0이 아니고, 현재 시간과 타이머 시작 시간의 차이가 CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_TIMEOUT_MS 이상이면
         if (auto_pointer_layer_timer != 0 && TIMER_DIFF_16(timer_read(), auto_pointer_layer_timer) >= CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_TIMEOUT_MS) {
-            // 将自动切换鼠标层的定时器重置为0
+            // 자동 마우스 레이어 타이머를 0으로 초기화합니다.
             auto_pointer_layer_timer = 0;
     //        layer_off(LAYER_POINTER);
-    //关闭 LAYER_MOUSE 鼠标层
+    // LAYER_MOUSE 마우스 레이어를 끕니다.
             layer_off(LAYER_MOUSE);
         };
     }
@@ -268,8 +268,8 @@ void matrix_scan_user(void) {
 #endif // CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_ENABLE
 
 
-//在图层变化时自动启用狙击模式，切换到LAYER_POINTER指针层启用阻击模式
-//和自动启用阻击模式相关
+// 레이어 변경 시 LAYER_POINTER 포인터 레이어로 들어가면 스나이핑 모드를 자동으로 활성화합니다.
+// 자동 스나이핑 모드와 관련된 설정입니다.
 #ifdef CHARYBDIS_AUTO_SNIPING_ON_LAYER
 layer_state_t layer_state_set_user(layer_state_t state) {
     charybdis_set_pointer_sniping_enabled(layer_state_cmp(state, CHARYBDIS_AUTO_SNIPING_ON_LAYER));
@@ -278,20 +278,20 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #    endif // CHARYBDIS_AUTO_SNIPING_ON_LAYER
 #endif     // POINTING_DEVICE_ENABLE
 
-//和rgb有关可以不用管
+// RGB 관련 부분이므로 신경 쓰지 않아도 됩니다.
 #ifdef RGB_MATRIX_ENABLE
 // Forward-declare this helper function since it is defined in rgb_matrix.c.
 void rgb_matrix_update_pwm_buffers(void);
 #endif
 
-//自定义键值
+// 사용자 정의 키 코드
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
         // toggle auto mouse enable key
         case AUTO_MODE_TOGGLE:
             if(record->event.pressed) { // key down
                 user_config.is_auto_enabled ^=  1;
-            } // 是否开启自动切层
+            } // 자동 레이어 전환을 켜는지 여부
             return false; // prevent further processing of keycode
         case AUTO_TIME_50:
             if(record->event.pressed) { // key down
@@ -299,7 +299,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             if(user_config.auto_time > CHARYBDIS_AUTO_MAX_TIMEOUT_MS){
                 user_config.auto_time = CHARYBDIS_AUTO_MIN_TIMEOUT_MS;
             }
-            } // 增加轨迹球超时时间
+            } // 트랙볼 타임아웃 시간을 늘립니다.
             return false; // prevent further processing of keycode
         case AUTO_TIME_50R:
             if(record->event.pressed) { // key down
@@ -307,7 +307,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             if(user_config.auto_time > CHARYBDIS_AUTO_MAX_TIMEOUT_MS){
                 user_config.auto_time = CHARYBDIS_AUTO_MAX_TIMEOUT_MS;
             }
-            } // 增加轨迹球超
+            } // 트랙볼 타임아웃을 늘립니다.
             return false; // prevent further processing of keycode
         case AUTO_TIME_100:
             if(record->event.pressed) { // key down
@@ -315,23 +315,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             if(user_config.auto_time > CHARYBDIS_AUTO_MAX_TIMEOUT_MS){
                 user_config.auto_time = 0;
             }
-            } // 增加轨迹球超时时间
+            } // 트랙볼 타임아웃 시간을 늘립니다.
             return false; // prevent further processing of keycode
         case AUTO_THRESHOLD:
             if(record->event.pressed) { // key down
                 user_config.threshold_value +=  1;
 //                eeconfig_update_user(user_config.raw1);
-            } // 增加轨迹球触发阈值
+            } // 트랙볼 트리거 임계값을 높입니다.
             return false; // prevent further processing of keycode
         case TInfo:
             if(record->event.pressed) { // key down
                 user_config.is_oled_enabled ^=  1;
-            } // 显示当前轨迹球的设置
+            } // 현재 트랙볼 설정을 표시합니다.
             return false; // prevent further processing of keycode
         case T_SAVE:
             if(record->event.pressed) { // key down
                 eeconfig_update_user(user_config.raw1);
-            } // 保存自动切层的设置
+            } // 자동 레이어 전환 설정을 저장합니다.
             return false; // prevent further processing of keycode
     }
     return true;
@@ -341,10 +341,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
 /* oled stuff :) */
 #ifdef OLED_ENABLE
 #define IDLE_FRAMES 5
-#define IDLE_SPEED 20 // 低于此wpm值，动画将空闲
+#define IDLE_SPEED 20 // 이 WPM 이하일 때 애니메이션이 유휴 상태가 됩니다
 #define TAP_FRAMES 2
-#define TAP_SPEED 40 // 以上的wpm值输入动画触发
-#define ANIM_FRAME_DURATION 200 // 每帧持续的时间(毫秒
+#define TAP_SPEED 40 // 이 WPM 이상일 때 입력 애니메이션이 활성화됩니다
+#define ANIM_FRAME_DURATION 200 // 각 프레임 지속 시간(밀리초)
 #define ANIM_SIZE 636 // number of bytes in array
 
 
@@ -550,8 +550,8 @@ static void render_cat(void) {
 
 //    #if OLED_TIMEOUT > 0
 //    /* the animation prevents the normal timeout from occuring
-//    last_input_activity_elapsed返回自上次输入活动（按键和编码器使用）以来的时间
-//    自上次LED活动以来的毫秒数
+//    last_input_activity_elapsed는 마지막 입력 활동(키/엔코더 사용) 이후 경과 시간을 반환합니다
+//    마지막 LED 활동 이후 경과한 밀리초
 //    */
 //    if (last_input_activity_elapsed() > OLED_TIMEOUT) {
 ////        oled_clear();
@@ -690,7 +690,7 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
 }
 
 
-//从设备
+// 슬레이브 장치
 static void slave_data(void) {
     /* Print current mode */
 //    oled_set_cursor(0, 0);
@@ -747,13 +747,13 @@ static void slave_data(void) {
 
 static void tv_ms(void) {
     oled_clear();
-    //   鼠标模式OLED
+    //   마우스 모드 OLED
     oled_write_P(PSTR("AutoL:"), false);
     char auto_m[2];
     snprintf(auto_m, sizeof(auto_m), "%d", user_config.is_auto_enabled);
     oled_write(auto_m, false);
     trackball_oled_default();
-//    自动切层模式
+//    자동 레이어 전환 모드
     oled_write_P(PSTR("ATV  :"), false);
     char count_atv_str[2];
     snprintf(count_atv_str, sizeof(count_atv_str), "%d", CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_THRESHOLD);
@@ -764,13 +764,13 @@ static void tv_ms(void) {
     snprintf(count_ams_str, sizeof(count_ams_str), "%d", CHARYBDIS_AUTO_POINTER_LAYER_TRIGGER_TIMEOUT_MS);
     oled_write_ln(count_ams_str, false);
 
-    //   滚动/阻击模式OLED
+    //   스크롤/스나이핑 모드 OLED
     trackball_oled_info();
 //
 //        #if OLED_TIMEOUT > 0
 //    /* the animation prevents the normal timeout from occuring
-//    last_input_activity_elapsed返回自上次输入活动（按键和编码器使用）以来的时间
-//    自上次LED活动以来的毫秒数
+//    last_input_activity_elapsed는 마지막 입력 활동(키/엔코더 사용) 이후 경과 시간을 반환합니다
+//    마지막 LED 활동 이후 경과한 밀리초
 //    */
 //    if (last_input_activity_elapsed() > OLED_TIMEOUT) {
 ////        oled_clear();
@@ -782,7 +782,7 @@ static void tv_ms(void) {
 //    #endif
     }
 
-//主设备OLED
+// 마스터 장치 OLED
 static void master_data(void) {
 
    if(user_config.is_oled_enabled){
@@ -822,10 +822,10 @@ bool oled_task_user(void) {
 
 
 
-//旋钮映射需要在vial的rules.mk加入
+// 노브 매핑을 사용하려면 vial/rules.mk에 추가해야 합니다
 //ENCODER_ENABLE = yes
 //ENCODER_MAP_ENABLE = yes
-//旋钮要(0,0 0,1)  (1,0 1,1) 这里前一个代表旋钮下标，后一个都一样，有两个旋钮，前面就是0 1
+// 노브는 (0,0 0,1) (1,0 1,1)처럼 설정합니다. 앞 숫자는 노브 인덱스, 뒤 숫자는 같으며 노브가 두 개이므로 앞부분은 0과 1입니다.
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [0] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
     [1] = { ENCODER_CCW_CW(KC_TRNS, KC_TRNS), ENCODER_CCW_CW(KC_TRNS, KC_TRNS) },
